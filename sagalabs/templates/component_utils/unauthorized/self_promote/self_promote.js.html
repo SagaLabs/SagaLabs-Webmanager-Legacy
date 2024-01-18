@@ -1,0 +1,33 @@
+<script>
+
+    function startLoad(){
+        document.getElementById("input-button").innerHTML = '<span class="spinner-border spinner-border-sm mx-1" role="status" aria-hidden="true"></span>'
+    }
+    function endLoad(){
+        document.getElementById("input-button").innerHTML = 'Promote me!'
+    }
+
+    function promoteMe(){
+        startLoad();
+        fetch('/api/user/promote_self', {
+            method: 'PUT', 
+            body: JSON.stringify({promotion_key: document.getElementById("input-promotion-key").value}),
+            headers: {
+            'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+        if(response.status === 200){
+            ModalAlertObject.display({title: "Success", text: "Successfully promoted to SuperAdmin", onClose: ()=>location.reload()})
+        } else if (response.status === 401){
+            ModalAlertObject.display({title: "Wrong key", text: "You inputed the wrong key. Please try again", onClose: endLoad})
+        } else {
+            ModalAlertObject.display({title: "Failure", text: "An error occoured. Please refresh the site or contact an administrator if the problem persist.", onClose: endLoad})
+        } 
+        })
+        .catch(err => {
+        ModalAlertObject.display({title: "Failure", text: "An error occoured. Please refresh the site or contact an administrator if the problem persist.", onClose: endLoad})
+        })
+    }
+
+</script>

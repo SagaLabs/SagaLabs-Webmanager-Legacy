@@ -1,0 +1,30 @@
+<div class="accordion-item">
+    <h2 class="accordion-header position-relative" id="header-{range.name}-{lab.name}">
+        <div class="position-absolute top-50 translate-middle" style="right: 0px; z-index: 4;">
+          <div class="btn-group position-relative" role="group" aria-label="Basic mixed styles example">
+            <button 
+            {% if lab.is_vpn_downloadable %} 
+                class="btn btn-success" 
+            {% else %}
+                disabled class="btn btn-secondary" 
+            {% endif %} 
+            type="button" id="vpn-{{range.name}}-{{lab.name}}" onclick="download_vpn('vpn-{{range.name}}-{{lab.name}}', '{{range.name}}', '{{lab.name}}')">
+                <img style='height: 20px; width: 20px;' src='{{ url_for("static", filename="svg/download.svg") }}'>
+                <p style="display: inline; white-space: pre;"> Download VPN</p>
+            </button>
+          </div>
+        </div>  
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ range.name }}-{{ lab.name }}" aria-expanded="false" aria-controls="collapse-{{ range.name }}-{{ lab.name }}">
+          <div class="badge bg-light text-dark me-2 border p-2">
+            <i class="fas fa-circle {{lab.state_color}} me-1"></i>
+            {{lab.state}}
+          </div>  
+          <strong>{{ range.name }}: Lab #{{ lab.name }}</strong>
+        </button>
+    </h2>
+    <div id="collapse-{{ range.name }}-{{ lab.name }}" class="accordion-collapse collapse" aria-labelledby="header-{range.name}-{lab.name}">
+        <div class="accordion-body">
+            <strong>Public ip:</strong> {{lab.public_ip}}
+        </div>
+    </div>
+</div>

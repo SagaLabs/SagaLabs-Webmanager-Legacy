@@ -1,0 +1,81 @@
+<script>
+    function displayResponse(response){
+      console.log(response)
+      ModalAlertObject.display({
+            title: "Response", 
+            text: response["message"], 
+            onClose: () => {location.reload()}
+      })
+    }
+
+    function requestPowerSwitch(range, newState){
+      powerIcon = "<img style='height: 20px; width: 20px; ' src='{{ url_for('static', filename='svg/power.svg') }}'>"
+
+      if (newState === "On"){
+        stateColor = 'bg-success'
+        onAccept = makeSimpelRequestPromise({
+          url: '/api/labs/start_range',
+          method: 'PUT',
+          data: {range: range},
+          onSuccess: displayResponse,
+          onFailiure: displayResponse
+        })
+      } else if (newState === "Off") {
+        stateColor = 'bg-danger'
+        onAccept = makeSimpelRequestPromise({
+          url: '/api/labs/stop_range',
+          method: 'PUT',
+          data: {range: range},
+          onSuccess: displayResponse,
+          onFailiure: displayResponse
+        })
+      }
+      
+      ModalAcceptObject.display({
+        title: "Confirm action",
+        text: `Are you sure you want to turn <b>${range}</b> <div style='cursor: default; border: 1px solid lightgrey;' class='btn ${stateColor}'>${powerIcon} ${newState}</div>?`,
+        onAccept: onAccept
+      })
+    }
+
+    function download_vpn(id, range, lab){
+      payload = {'range': range, 'lab': lab}
+
+      //Sets button to disabled state and replaces download icon with loading icon
+      buttonHTML = document.getElementById(id);
+      downloadIconHTML = buttonHTML.querySelector('img')
+      loadinIconHTML = new DOMParser().parseFromString('<span class="spinner-border spinner-border-sm mx-1" role="status" aria-hidden="true"></span>', 'text/html').body.firstChild;
+      buttonHTML.replaceChild(loadinIconHTML, downloadIconHTML)
+
+      fetch("/api/labs/download_vpn", {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload),
+        })
+        .then(response => {
+          buttonHTML.replaceChild(downloadIconHTML, loadinIconHTML)
+          if (response.status != 200){
+            response.json()
+            .then(response_object => {
+              if('message' in response_object){
+                displayResponse(response_object)
+              } else {
+                displayServerFail(ModalAlertObject)
+              }
+            })
+            .catch(()=>{displayServerFail(ModalAlertObject)})
+          } else {
+            return response.blob()
+          }
+        })
+        .then(blob => {
+          // Create a temporary anchor element to trigger the download
+          var a = document.createElement('a');
+          a.href = window.URL.createObjectURL(blob);
+          a.download = `${range}_Lab#${lab}.ovpn`; // Set the filename
+
+          // Simulate a click on the anchor element to trigger the download
+          a.click();
+        })
+    }
+  </script>

@@ -1,0 +1,74 @@
+<script>
+/*
+    DEPENDENCIES:
+        /component_utils/modal/modal_alert/modal_alert.html
+*/
+
+//This function will return a function, that when called will make a promise. Usefull for promise creation for ModalAccept
+//Upon fetch-error this function will display an errormessage with ModalAlert.
+//Upon fetch-success this function wil call the supplied function onSuccess.
+function makeGenericRequestPromise({fetchCallback, onSuccess, onFailiure}){
+    if (fetchCallback === undefined || onSuccess === undefined || onFailiure === undefined){
+        throw new Error("RequestPromiseMaker was not called properly")
+    }
+    return function(){
+        return new Promise((resolve) => {
+            fetchCallback()
+            .then(response => {
+                callback = response.status === 200 ? onSuccess : onFailiure
+
+                response.json()
+                .then(json => callback(json))
+                .catch(error => {callback({})})
+
+                resolve()
+            })
+            .catch(error => {
+                onFailiure()
+                resolve()
+            })
+        })
+    }
+}
+
+function failWithModalAlert(ModalAlertObject){
+    ModalAlertObject.display({
+        title: "Failiure",
+        text: "An error occoured. Please refresh the site and check your network connectivity or contact an administrator if the problem persist.",
+        onClose: ()=>{location.reload()}
+    })
+}
+
+function displayServerFail(ModalAlertObject){
+    ModalAlertObject.display({
+        title: "Server failiure",
+        text: "An error occoured, on the server. Feel free to contact an administrator if the problem persists.",
+        onClose: ()=>{location.reload()}
+    })
+}
+
+
+//A more simplified version of makeGenericRequestPromise, where you supply url and data instead of fetch-callback.
+function makeSimpelRequestPromise({url, method, data, onSuccess, onFailiure = () => failWithModalAlert(ModalAlertObject)}){
+
+    if (url === undefined || data === undefined || onSuccess === undefined){
+        throw new Error("RequestPromiseMaker was not called properly")
+    }
+    if (ModalAlertObject === undefined){
+        throw new Error("Unmet dependencies: ModalAlert")
+    }
+
+
+    fetchCallback = function(){
+        return fetch(url, {
+            method: method,
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+    }
+    return makeGenericRequestPromise({fetchCallback: fetchCallback, onSuccess: onSuccess, onFailiure: onFailiure})
+}
+
+</script>

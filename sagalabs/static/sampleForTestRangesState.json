@@ -1,0 +1,21 @@
+{
+  "sagaDev": {
+    "1": [{"running": false}]
+  },
+  "sagaDev1": {
+    "1": [{"running": false}],
+    "2": [{"running": false}],
+    "3": [{"running": true}]
+  },
+  "sagaDev2": {
+    "1": [{"running": true}],
+    "2": [{"running": true}],
+    "3": [{"running": true}]
+  },
+  "sagaDev3": {
+    "1": [{"running": false}, {"running": true}],
+    "2": [{"running": true}],
+    "3": [{"running": false}]
+  }
+}
+  

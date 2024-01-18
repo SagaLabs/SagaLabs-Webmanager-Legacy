@@ -1,0 +1,17 @@
+#config.yaml
+
+KEYVAULTURI: "https://sagalabskeyvault.vault.azure.net/"
+KEYVAULTFIREBASEJSON: "SagaLabs-Backbone-Firebase-privatekey-json"
+AUTH_COOKIE: "sagalabs_auth"
+
+local:
+  REDIRECTURI: "http://127.0.0.1:5001"
+  BACKBONEURL: "http://127.0.0.1:5000"
+
+dev:
+  REDIRECTURI: "https://admindev.sagalabs.dk"
+  BACKBONEURL: "https://backbonedev.sagalabs.dk"
+
+prod:
+  REDIRECTURI: "https://admin.sagalabs.dk"
+  BACKBONEURL: "https://backbone.sagalabs.dk"

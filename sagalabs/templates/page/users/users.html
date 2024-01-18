@@ -1,0 +1,29 @@
+{% extends "/component_utils/layout/layout.html" %} 
+{% block body %} 
+
+<!--Accept Modal-->
+{% include "/component_utils/modal/modal_accept/modal_accept.html" %}
+<!--Alert Modal-->
+{% include "/component_utils/modal/modal_alert/modal_alert.html" %}
+<!--Simple request promise maker-->
+{% include "/js_utils/request_promise_maker.js.html" %}
+
+  <div class="container w-70 text-bg-light rounded p-4 border-info border">
+    <div class="container p-2">
+      <div class="row align-items-start text-left ">
+        <div class="col text-secondary">
+          <h1 class="fw-bold">Users</h1>
+          
+          {% if profile.local_claims.UserType == "SuperAdmin" %}
+            <!--Access UserTable if SuperAdmin-->
+            {% include "/page/users/user_table/user_table.html" %}
+          {% else %}
+            <!--Display Unauthorized if not SuperAdmin-->
+            {% include "/component_utils/unauthorized/unauthorized.html" %}
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div> 
+{% endblock %}

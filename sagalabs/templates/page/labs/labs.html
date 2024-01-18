@@ -1,0 +1,35 @@
+{% extends "/component_utils/layout/layout.html" %} {% block body %} 
+<!--Dependencies-->
+{% include "/component_utils/modal/modal_accept/modal_accept.html" %}
+{% include "/component_utils/modal/modal_alert/modal_alert.html" %} 
+{% include "/js_utils/request_promise_maker.js.html" %} 
+<!---------------->
+
+<div class="container w-70 text-bg-light rounded p-4 border-info border">
+  <div class="container p-2">
+    <div class="row align-items-start text-left ">
+      <div class="col text-secondary">
+        <h1 class="fw-bold">Administration</h1>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function download_vpn(range, lab){
+      print("range: " + range + ". lab: " + lab);
+    }
+  </script>
+
+  <div class="accordion">
+
+    {% for range in ranges %}
+      {% set z_index = 1000 - loop.index %}
+      {% include "/page/labs/labs_accordion/range_container.html" %}
+    {% endfor %}
+
+  </div>
+
+  {% include "/page/labs/labs.js.html" %}
+
+
+</div> {% endblock %}

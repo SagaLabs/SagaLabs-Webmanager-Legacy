@@ -1,0 +1,36 @@
+# k8s-deployment-dev.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webmanager-dev
+  namespace: sagalabs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webmanager-dev
+  template:
+    metadata:
+      labels:
+        app: webmanager-dev
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret  # This is the name of the secret you created
+      containers:
+      - name: webmanager-dev
+        image: ghcr.io/cvpl-fdca/sagalabs-webmanager-dev  # Updated image name to include ghcr.io
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webmanager-dev
+  namespace: sagalabs
+spec:
+  selector:
+    app: webmanager-dev
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5001

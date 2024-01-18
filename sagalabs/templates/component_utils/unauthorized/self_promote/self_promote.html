@@ -1,0 +1,16 @@
+<!-- DEPENDENCIES:
+    /templates/components/ModalAlert.html
+-->
+
+<!-- js -->
+{% include "/component_utils/unauthorized/self_promote/self_promote.js.html" %}
+
+<div>
+    <p class="text-dark"><i>Input the self-promotion key to elevate your privileges:</i></p>
+    <div class="input-group">
+        <input type="password" class="form-control" placeholder="Self-promotion key" id="input-promotion-key">
+        <span class="input-group-btn">
+          <button class="btn btn-primary" style="width: 10vw;" type="button" onclick="promoteMe()" id="input-button">Promote me!</button>
+        </span>
+    </div>
+</div>

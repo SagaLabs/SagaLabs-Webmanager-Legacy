@@ -1,0 +1,66 @@
+<table class="table table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Type</th>
+            <th>Display Name</th>
+            <th>Email</th>
+            <th>Team</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>            
+        {% for user in users %}
+            <tr>
+                <td class="align-middle">
+                    <select class="form-select" id="type-select-{{ user.uid }}" 
+                    onchange="updateClaim({
+                        userId: '{{ user.uid }}',
+                        displayName: '{{ user.display_name }}',
+                        claimName: 'UserType',
+                        oldValue: '{{ user.local_claims.UserType }}',
+                        selectObject: this
+                    })" autocomplete="off">
+                        <option value="User" {% if user.local_claims.UserType == 'User' %}selected{% endif %} >User</option>
+                        <option value="Admin" {% if user.local_claims.UserType == 'Admin' %}selected{% endif %}>Admin</option>
+                        <option value="SuperAdmin" {% if user.local_claims.UserType == 'SuperAdmin' %}selected{% endif %}>SuperAdmin</option>
+                    </select>
+                </td>
+                <td class="align-middle">{{ user.display_name }}</td>
+                <td class="align-middle">{{ user.email }}</td>
+                <td class="align-middle">
+                    <select class="form-select user-role-select"
+                        onchange="
+                        updateRoleColor(this)
+                        updateClaim({
+                            userId: '{{ user.uid }}',
+                            displayName: '{{ user.display_name }}',
+                            claimName: 'AttackDefenseRole',
+                            oldValue: '{{ user.local_claims.AttackDefenseRole }}',
+                            synonym: 'Team',
+                            additionalModalDecline: ()=>{updateRoleColor(this);},
+                            customClaimValueStyle:(selectObject)=>{
+                                const claim_tag = 'div'
+                                const claim_class = 'btn'
+                                return `<${claim_tag} style='background-color: ${selectObject.style.backgroundColor}; cursor: default; border: 1px solid lightgrey;' class='${claim_class}'>${selectObject.value}</${claim_tag}>`
+                            },
+                            selectObject: this
+                        })" autocomplete="off">
+                            <option style="background-color:#FFFFFF;" value="NoTeam" {% if user.local_claims.AttackDefenseRole == 'NoTeam' %}selected{% endif %}>NoTeam</option>
+                            <option style="background-color:#FFFFFF;" value="RedTeam" {% if user.local_claims.AttackDefenseRole == 'RedTeam' %}selected{% endif %}>RedTeam</option>
+                            <option style="background-color:#FFFFFF;" value="BlueTeam" {% if user.local_claims.AttackDefenseRole == 'BlueTeam' %}selected{% endif %}>BlueTeam</option>
+                    </select>
+                </td>
+
+                <td class="align-middle">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteUser('{{ user.uid }}', '{{ user.display_name }}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- js -->
+{% include "/js_utils/request_promise_maker.js.html" %} 
+{% include "/page/users/user_table/user_table.js.html" %}

@@ -1,0 +1,44 @@
+# .github\workflows\deploy-prod.yaml
+name: Build and Deploy to production
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  DOCKER_IMAGE_NAME: ghcr.io/cvpl-fdca/sagalabs-webmanager-prod
+
+jobs:
+
+  build_docker_image_and_push:
+      name: Build Docker Image
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Repo
+          uses: actions/checkout@v2
+        - name: Create .env file from GitHub Secret
+          run: echo "${{ secrets.PRODUCTIONENV }}" > .env
+        - name: Build the tagged Docker image
+          run: docker build -t ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} .
+        - name: Login to GitHub Container Registry
+          run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        - name: Push SHA-tagged Docker Image
+          run: docker push ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+        - name: Tag Docker Image as Latest
+          run: docker tag ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} ${{ env.DOCKER_IMAGE_NAME }}:latest
+        - name: Push Latest Docker Image
+          run: docker push ${{ env.DOCKER_IMAGE_NAME }}:latest
+
+  deploy_to_kubernetes_cluster:
+    name: Deploy to Kubernetes Cluster
+    needs: build_docker_image_and_push
+    runs-on: ubuntu-latest
+    steps:
+      - name: decode and use kubeconfig
+        run: echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig.yaml
+      - name: Apply Kubernetes Config
+        run: |
+          export KUBECONFIG=kubeconfig.yaml
+          kubectl config use-context strato
+          kubectl set image deployment/webmanager-prod webmanager-prod=${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} --namespace=sagalabs

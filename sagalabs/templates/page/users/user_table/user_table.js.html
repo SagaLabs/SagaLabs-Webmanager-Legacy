@@ -1,0 +1,81 @@
+<script>
+
+    function updateRoleColor(selectObject){
+        newValue = selectObject.value;
+        if(newValue=='RedTeam'){
+            selectObject.style.backgroundColor = '#e67681'
+        } else if (newValue=='BlueTeam'){
+            selectObject.style.backgroundColor = '#599bfe'
+        } else {
+            selectObject.style.backgroundColor = ''
+        }
+    }
+
+    document.querySelectorAll('.user-role-select').forEach(selectElement => {
+
+        updateRoleColor(selectElement);
+    });
+
+    function updateClaim({
+        userId, 
+        displayName, 
+        claimName, 
+        oldValue, 
+        selectObject, 
+        synonym=claimName, 
+        additionalModalDecline=()=>{}, 
+        customClaimValueStyle=(selectObject)=>{return '<b>'+selectObject.value+'</b>'}})
+        {
+        const claimValue = selectObject.value;
+        const claimValueStyle = customClaimValueStyle(selectObject);
+
+        const onAcceptPromise = makeSimpelRequestPromise({
+            url: "/api/user/update_claim", 
+            method: 'PUT',
+            data: {
+                uid: userId,
+                claim_name: claimName,
+                claim_value: claimValue
+            },
+            onSuccess: function(){
+                ModalAlertObject.display({
+                    title: "Success", 
+                    text: "Successfully changed " + synonym + " to " + claimValueStyle +" for <b>'" + displayName + "'</b>.", 
+                    onClose: () => {location.reload()}
+                })
+            }
+        });
+
+        ModalAcceptObject.display({
+            title: "Confirm Changes", 
+            text: "Are you sure you want to change " + synonym +" to " + claimValueStyle + " for <b>'" + displayName + "'</b>?", 
+            onAccept: onAcceptPromise,
+            onClose: () => {selectObject.value = oldValue; additionalModalDecline()}
+        })
+        
+    }
+
+    function deleteUser(userId, displayName){
+        const onAcceptPromise = makeSimpelRequestPromise({
+            url: "/api/user/delete",
+            method: "DELETE",
+            data: {
+                uid: userId
+            },
+            onSuccess: function(){
+                ModalAlertObject.display({
+                    title: "Sucess",
+                    text: "User " + displayName + " has been deleted.",
+                    onClose: () => {location.reload()}
+                })
+            }
+        });
+
+        ModalAcceptObject.display({
+            title: "Confirm deletion",
+            text: "Are you sure you want to <b>DELETE</b> user <b>" + displayName + "</b>.",
+            onAccept: onAcceptPromise
+        })
+    }
+
+</script>    

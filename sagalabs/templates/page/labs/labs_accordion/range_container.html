@@ -1,0 +1,30 @@
+<div class="accordion-item position-relative" style="z-index: {{z_index}};">
+    <h2 class="accordion-header position-relative" id="heading-{{range.name}}">
+      <div class="position-absolute top-50 translate-middle" style="right: 0; z-index: 1001;">
+        <div class="btn-group position-relative" role="group">
+          <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <img style='height: 20px; width: 20px;' src='{{ url_for("static", filename="svg/power.svg") }}'>
+            Turn on/off
+          </button>
+          <ul class="dropdown-menu">
+            <li><button class="dropdown-item" type="button" onclick="requestPowerSwitch('{{ range.name }}', 'On')">Turn on</button></li>
+            <li><button class="dropdown-item" type="button" onclick="requestPowerSwitch('{{ range.name }}', 'Off')">Turn off</button></li>
+          </ul>
+        </div>
+      </div>  
+      <button style="--bs-accordion-btn-focus-box-shadow: 0" class="accordion-button collapsed bg-primary text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{range.name}}" aria-expanded="false">
+          <div class="badge bg-light text-dark me-2 border p-2">
+            <i class="fas fa-circle me-1 {{range.state_color}}"></i>
+            {{ range.state_text }}
+          </div>    
+          <strong>{{ range.name }}</strong>
+        </button>
+    </h2>
+    <div id="collapse-{{range.name}}" class="accordion-collapse collapse" aria-labelledby="heading-{{range.name}}">
+        <div class="accordion-body">
+            {% for lab in range.labs %}
+                {% include "/page/labs/labs_accordion/lab_container.html" %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
