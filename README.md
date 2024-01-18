@@ -1,4 +1,6 @@
-# SagaLabs Web Manager
+# SagaLabs Web Manager Legacy
+This is the old and open-source version of SagaLabs webmanager. 
+
 
 Written in Flask
 
